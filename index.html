@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Конвертер и Редактор</title>
+    <style>
+        :root {
+            --bg-container: rgba(255, 255, 255, 0.9);
+            --text-color: #2c2c2c;
+            --border-color: #cccccc;
+            --btn-bg: #0056b3;
+            --btn-hover: #003d82;
+            --btn-text: #ffffff;
+            --btn-clear: #d9534f;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-container: rgba(30, 30, 30, 0.9);
+                --text-color: #ffffff; /* Теперь надпись будет чисто белой */
+                --border-color: #555555;
+                --btn-bg: #6a0dad;
+                --btn-hover: #4b0082;
+            }
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            font-family: sans-serif;
+            background: linear-gradient(135deg, #000000, #001a4d, #2d004d);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: var(--bg-container);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-color);
+            font-family: monospace;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .buttons-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--btn-bg);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.clear { background-color: var(--btn-clear); }
+        button:hover { filter: brightness(1.2); }
+
+        /* Стили предпросмотра */
+        #previewContainer {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: white;
+            z-index: 1000;
+            flex-direction: column;
+        }
+        #previewContainer iframe { width: 100%; height: 100%; border: none; }
+        .back-btn {
+            position: absolute;
+            top: 10px; left: 10px;
+            z-index: 1001;
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Редактор кода</h1>
+        <textarea id="htmlInput" placeholder="Вставьте HTML код..."></textarea>
+        
+        <div class="buttons-group">
+            <button id="pasteBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                Вставить
+            </button>
+            <button id="previewBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                Предпросмотр
+            </button>
+            <button id="clearBtn" class="clear">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                Очистить
+            </button>
+            <button id="downloadBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Скачать
+            </button>
+        </div>
+    </div>
+
+    <!-- Окно предпросмотра -->
+    <div id="previewContainer">
+        <button class="back-btn" onclick="closePreview()">← Назад</button>
+        <iframe id="previewFrame"></iframe>
+    </div>
+
+    <script>
+        const textarea = document.getElementById('htmlInput');
+        
+        // Вставка
+        document.getElementById('pasteBtn').onclick = async () => {
+            textarea.value = await navigator.clipboard.readText();
+        };
+
+        // Очистка
+        document.getElementById('clearBtn').onclick = () => {
+            if(confirm('Очистить всё поле ввода?')) textarea.value = '';
+        };
+
+        // Предпросмотр
+        document.getElementById('previewBtn').onclick = () => {
+            const frame = document.getElementById('previewFrame');
+            const container = document.getElementById('previewContainer');
+            frame.srcdoc = textarea.value;
+            container.style.display = 'flex';
+        };
+
+        function closePreview() {
+            document.getElementById('previewContainer').style.display = 'none';
+        }
+
+        // Скачивание
+        document.getElementById('downloadBtn').onclick = () => {
+            const blob = new Blob([textarea.value], {type: 'text/html'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            a.click();
+        };
+    </script>
+</body>
+</html>
