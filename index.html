@@ -16,9 +16,9 @@
     --ink-1:#c7ccd3;
     --ink-2:#868f9c;
     --ink-3:#565f6b;
-    --accent:#7ef7c4;
-    --accent-ink:#06231a;
-    --accent-dim:rgba(126,247,196,0.14);
+    --accent:#c15f3c;
+    --accent-ink:#fdf6f2;
+    --accent-dim:rgba(193,95,60,0.16);
     --red:#f77e7e;
     --radius-s:8px;
     --radius-m:14px;
@@ -44,9 +44,9 @@
     --ink-1:#43484f;
     --ink-2:#767c85;
     --ink-3:#9aa0a8;
-    --accent:#0f8a5f;
-    --accent-ink:#f2fff8;
-    --accent-dim:rgba(15,138,95,0.10);
+    --accent:#8a442b;
+    --accent-ink:#fdf6f2;
+    --accent-dim:rgba(193,95,60,0.12);
     --red:#c23b3b;
     --shadow-lift: 0 24px 60px -24px rgba(20,20,15,0.28);
     color-scheme: light;
@@ -400,6 +400,7 @@
     background:var(--sand-1);
     animation: slide-up 380ms var(--ease) both;
   }
+  .control-bar.hidden{ display:none; }
   @keyframes slide-up{
     from{ opacity:0; transform:translateY(16px); }
     to{ opacity:1; transform:translateY(0); }
@@ -725,6 +726,7 @@
     toast: $("#toast"),
     toastText: $("#toastText"),
     homeRecent: $("#homeRecent"),
+    controlBar: $(".control-bar"),
     sharedBanner: $("#sharedBanner"),
     bannerHome: $("#bannerHome"),
     shareOverlay: $("#shareOverlay"),
@@ -839,6 +841,7 @@
   function showSharedBanner(){
     isSharedSession = true;
     els.sharedBanner.style.display = "flex";
+    els.controlBar.classList.add("hidden");
   }
 
   els.bannerHome.addEventListener("click", ()=>{
