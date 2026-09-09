@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Sandbox — запуск HTML на лету</title>
+<title>qubit html runner</title>
 <style>
   :root{
     --sand-0:#0b0d10;
@@ -62,6 +62,9 @@
     -webkit-font-smoothing:antialiased;
     overflow:hidden;
     transition:background var(--dur-3) var(--ease), color var(--dur-3) var(--ease);
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -78,10 +81,31 @@
   }
   html[data-theme="light"] .grain{ opacity:0.7; }
 
+  /* =================== SHARED-LINK BANNER =================== */
+  .shared-banner{
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+    background:var(--accent-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .shared-banner button{
+    all:unset; cursor:pointer;
+    display:flex; align-items:center; gap:7px;
+    color:var(--accent); font-weight:650;
+    font-family:var(--mono); font-size:11.5px;
+    letter-spacing:0.02em;
+    padding:3px 2px;
+    border-bottom:1px solid transparent;
+    transition:border-color var(--dur-1) var(--ease);
+  }
+  .shared-banner button:hover{ border-color:var(--accent); }
+  .shared-banner svg{ width:12px; height:12px; flex-shrink:0; }
+
   /* =================== APP SHELL =================== */
   #app{
     position:relative; z-index:1;
-    height:100dvh; width:100vw;
+    flex:1; min-height:0; width:100vw;
     display:flex; flex-direction:column;
   }
 
@@ -398,6 +422,83 @@
   }
   .bar-btn.primary:hover{ filter:brightness(1.06); background:var(--accent); }
 
+  /* =================== SHARE MODAL =================== */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(0,0,0,0.45);
+    backdrop-filter: blur(3px);
+    display:flex; align-items:flex-end; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity var(--dur-2) var(--ease);
+  }
+  .modal-overlay.show{ opacity:1; pointer-events:auto; }
+  @media (min-width:640px){
+    .modal-overlay{ align-items:center; }
+  }
+
+  .share-modal{
+    width:100%; max-width:480px;
+    background:var(--sand-1);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius-l) var(--radius-l) 0 0;
+    box-shadow:var(--shadow-lift);
+    padding:22px 20px calc(20px + env(safe-area-inset-bottom));
+    transform:translateY(24px);
+    transition:transform var(--dur-2) var(--ease);
+  }
+  .modal-overlay.show .share-modal{ transform:translateY(0); }
+  @media (min-width:640px){
+    .share-modal{ border-radius:var(--radius-l); }
+  }
+
+  .share-modal h3{
+    margin:0 0 6px; font-size:15.5px; font-weight:650;
+  }
+  .share-modal .share-sub{
+    margin:0 0 16px; font-size:13px; color:var(--ink-2); line-height:1.5;
+  }
+  .share-modal .share-sub b{ color:var(--ink-0); }
+
+  .share-link-row{
+    display:flex; gap:8px; margin-bottom:14px;
+  }
+  .share-link-row input{
+    flex:1; min-width:0;
+    font-family:var(--mono); font-size:12px; color:var(--ink-1);
+    background:var(--sand-2); border:1px solid var(--line);
+    border-radius:9px; padding:11px 12px;
+    outline:none;
+  }
+  .share-link-row input:focus{ border-color:var(--line-strong); }
+  .share-copy-btn{
+    all:unset; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; gap:6px;
+    background:var(--accent); color:var(--accent-ink);
+    font-weight:650; font-size:12.5px;
+    padding:0 16px; border-radius:9px;
+    transition:filter var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+  }
+  .share-copy-btn:hover{ filter:brightness(1.06); }
+  .share-copy-btn:active{ transform:scale(0.97); }
+  .share-copy-btn svg{ width:14px; height:14px; }
+
+  .share-note{
+    display:flex; gap:8px;
+    font-size:11.5px; color:var(--ink-3); line-height:1.5;
+    padding-top:14px; border-top:1px solid var(--line);
+  }
+  .share-note svg{ width:14px; height:14px; flex-shrink:0; margin-top:1px; }
+
+  .share-close-btn{
+    all:unset; cursor:pointer;
+    display:block; text-align:center;
+    font-size:13px; color:var(--ink-2);
+    padding:12px; margin-top:14px;
+    border-radius:9px; background:var(--sand-2); border:1px solid var(--line);
+    transition:background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+  .share-close-btn:hover{ background:var(--sand-3); color:var(--ink-0); }
+
   /* =================== TOAST =================== */
   .toast{
     position:fixed; left:50%; bottom:26px; z-index:60;
@@ -438,6 +539,13 @@
 
 <div class="grain"></div>
 
+<div class="shared-banner" id="sharedBanner" style="display:none;">
+  <button id="bannerHome">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
+    qubit html runner
+  </button>
+</div>
+
 <div id="app">
 
   <!-- ============ HOME VIEW ============ -->
@@ -445,7 +553,7 @@
     <div class="topbar">
       <div class="brand">
         <span class="dot"></span>
-        <b>htmlbox</b><span class="sub">&nbsp;/ предпросмотр кода</span>
+        <b>qubit</b><span class="sub">&nbsp;html runner</span>
       </div>
       <div class="theme-toggle" id="themeToggle">
         <button data-theme-choice="light" title="Светлая тема">
@@ -554,6 +662,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
         <span class="txt">Редактировать</span>
       </button>
+      <button class="bar-btn" id="btnShare">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-3.2M8.6 13.4l6.8 3.2"/></svg>
+        <span class="txt">Поделиться</span>
+      </button>
       <button class="bar-btn primary" id="btnSave">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
         <span class="txt">Скачать</span>
@@ -561,6 +673,25 @@
     </div>
   </div>
 
+</div>
+
+<div class="modal-overlay" id="shareOverlay">
+  <div class="share-modal">
+    <h3>Ссылка готова</h3>
+    <p class="share-sub">Код <b id="shareFilename">index.html</b> зашит прямо в ссылку. Кто угодно откроет её — и увидит запущенную страницу без ручной вставки кода.</p>
+    <div class="share-link-row">
+      <input type="text" id="shareLinkInput" readonly>
+      <button class="share-copy-btn" id="shareCopyBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Копировать
+      </button>
+    </div>
+    <div class="share-note" id="shareNote">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <span>Ссылка не хранится ни на каком сервере — весь код лежит внутри неё самой. Очень длинный HTML может дать слишком длинную ссылку для некоторых мессенджеров.</span>
+    </div>
+    <button class="share-close-btn" id="shareModalClose">Закрыть</button>
+  </div>
 </div>
 
 <div class="toast" id="toast">
@@ -593,8 +724,87 @@
     previewLoading: $("#previewLoading"),
     toast: $("#toast"),
     toastText: $("#toastText"),
-    homeRecent: $("#homeRecent")
+    homeRecent: $("#homeRecent"),
+    sharedBanner: $("#sharedBanner"),
+    bannerHome: $("#bannerHome"),
+    shareOverlay: $("#shareOverlay"),
+    shareLinkInput: $("#shareLinkInput"),
+    shareFilename: $("#shareFilename"),
+    shareCopyBtn: $("#shareCopyBtn"),
+    shareModalClose: $("#shareModalClose")
   };
+
+  /* ---------------- SHARE-LINK ENCODING (variant 1: code lives inside the URL, no server/DB) ----------------
+     Pipeline: HTML string -> UTF-8 bytes -> gzip (CompressionStream, when the browser supports it)
+     -> base64 -> URL-safe base64 (for use in location.hash, so nothing is ever sent to any server).
+     Falls back to plain (uncompressed) URL-safe base64 if CompressionStream/DecompressionStream
+     is unavailable, so old browsers can still open a link, just at a larger size. */
+
+  function toUrlSafeB64(b64){
+    return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/,"");
+  }
+  function fromUrlSafeB64(s){
+    s = s.replace(/-/g, "+").replace(/_/g, "/");
+    while(s.length % 4) s += "=";
+    return s;
+  }
+  function bytesToBase64(bytes){
+    let bin = "";
+    const chunk = 0x8000;
+    for(let i=0; i<bytes.length; i+=chunk){
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+    }
+    return btoa(bin);
+  }
+  function base64ToBytes(b64){
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for(let i=0; i<bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+  async function streamToBytes(stream){
+    const reader = stream.getReader();
+    const chunks = [];
+    let total = 0;
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      chunks.push(value);
+      total += value.length;
+    }
+    const out = new Uint8Array(total);
+    let off = 0;
+    for(const c of chunks){ out.set(c, off); off += c.length; }
+    return out;
+  }
+
+  const canCompress = (typeof CompressionStream !== "undefined") && (typeof DecompressionStream !== "undefined");
+
+  async function encodeCodeToParam(code){
+    const utf8 = new TextEncoder().encode(code);
+    if(canCompress){
+      const cs = new CompressionStream("gzip");
+      const compressedStream = new Blob([utf8]).stream().pipeThrough(cs);
+      const compressedBytes = await streamToBytes(compressedStream);
+      return "z" + toUrlSafeB64(bytesToBase64(compressedBytes));
+    }
+    return "r" + toUrlSafeB64(bytesToBase64(utf8));
+  }
+
+  async function decodeParamToCode(param){
+    const marker = param.charAt(0);
+    const payload = param.slice(1);
+    const bytes = base64ToBytes(fromUrlSafeB64(payload));
+    if(marker === "z"){
+      if(!canCompress) throw new Error("Этот браузер не поддерживает распаковку — обновите браузер.");
+      const ds = new DecompressionStream("gzip");
+      const decompressedStream = new Blob([bytes]).stream().pipeThrough(ds);
+      const rawBytes = await streamToBytes(decompressedStream);
+      return new TextDecoder().decode(rawBytes);
+    }
+    // marker === "r" (raw, uncompressed fallback)
+    return new TextDecoder().decode(bytes);
+  }
 
   /* ---------------- VIEW ROUTING (with History API for back-gesture) ---------------- */
   // Each view push adds a history entry so the system/browser back gesture
@@ -618,14 +828,53 @@
     }
   }
 
-  // Initialize the very first history entry as "home".
-  history.replaceState({ view: "home" }, "", "#home");
-
   // Handle back/forward navigation, including the mobile system back gesture.
   window.addEventListener("popstate", (e)=>{
     const target = (e.state && e.state.view) || "home";
     renderView(target);
   });
+
+  let isSharedSession = false;
+
+  function showSharedBanner(){
+    isSharedSession = true;
+    els.sharedBanner.style.display = "flex";
+  }
+
+  els.bannerHome.addEventListener("click", ()=>{
+    // Leaving the shared link entirely: drop the hash and go to the real home screen.
+    isSharedSession = false;
+    els.sharedBanner.style.display = "none";
+    history.replaceState({ view: "home" }, "", location.pathname + location.search);
+    renderView("home");
+  });
+
+  /* ---------------- Boot: check whether we were opened via a share-link ---------------- */
+  async function boot(){
+    const hash = location.hash || "";
+    const m = hash.match(/^#(?:code=)?([a-zA-Z0-9\-_]+)$/);
+    if(m && m[1] && m[1] !== "home" && m[1] !== "editor" && m[1] !== "preview"){
+      try{
+        const code = await decodeParamToCode(m[1]);
+        els.codeArea.value = code;
+        state.code = code;
+        state.filename = "shared.html";
+        els.filenameTag.textContent = state.filename;
+        els.previewTitle.textContent = state.filename;
+        saveDraft();
+        showSharedBanner();
+        history.replaceState({ view: "preview" }, "", hash);
+        renderView("preview");
+        renderFrame();
+        return;
+      }catch(err){
+        toast("Не удалось прочитать ссылку — она повреждена или устарела");
+      }
+    }
+    // Normal boot: start on home.
+    history.replaceState({ view: "home" }, "", "#home");
+    renderView("home");
+  }
 
   /* ---------------- THEME (site UI) ---------------- */
   function applyTheme(choice){
@@ -811,8 +1060,76 @@
     };
   }
 
-  $("#btnClosePreview").addEventListener("click", ()=> history.back());
+  $("#btnClosePreview").addEventListener("click", ()=>{
+    if(isSharedSession){
+      // A shared link has no "home" underneath it in history — send it there directly.
+      els.bannerHome.click();
+    } else {
+      history.back();
+    }
+  });
   $("#btnEdit").addEventListener("click", ()=> goTo("editor"));
+
+  /* ---------------- SHARE ---------------- */
+  $("#btnShare").addEventListener("click", async ()=>{
+    const code = els.codeArea.value || state.code;
+    if(!code || !code.trim()){
+      toast("Нечего расшаривать — сначала запустите какой-нибудь код");
+      return;
+    }
+    let link;
+    try{
+      const param = await encodeCodeToParam(code);
+      link = location.origin + location.pathname + "#" + param;
+    }catch(err){
+      toast("Не получилось создать ссылку: " + (err && err.message ? err.message : "неизвестная ошибка"));
+      return;
+    }
+
+    // Prefer the native share sheet on mobile (lets the person pick Messages,
+    // WhatsApp, Telegram, Mail, etc. directly). Fall back to the copy modal
+    // when the Web Share API isn't available, was cancelled, or fails.
+    if(navigator.share){
+      try{
+        await navigator.share({ title: state.filename || "index.html", url: link });
+        return;
+      }catch(err){
+        if(err && err.name === "AbortError") return; // user cancelled the share sheet
+        // fall through to the copy-link modal on any other failure
+      }
+    }
+
+    els.shareLinkInput.value = link;
+    els.shareFilename.textContent = state.filename || "index.html";
+    const approxKb = Math.round(link.length / 1024 * 10) / 10;
+    const noteBase = "Ссылка не хранится ни на каком сервере — весь код лежит внутри неё самой.";
+    $("#shareNote span").textContent = link.length > 6000
+      ? noteBase + " Эта ссылка длинная (~" + approxKb + " КБ) — некоторые мессенджеры или почтовые клиенты могут её обрезать."
+      : noteBase;
+    els.shareOverlay.classList.add("show");
+  });
+
+  function closeShareModal(){ els.shareOverlay.classList.remove("show"); }
+  $("#shareModalClose").addEventListener("click", closeShareModal);
+  els.shareOverlay.addEventListener("click", (e)=>{
+    if(e.target === els.shareOverlay) closeShareModal();
+  });
+
+  $("#shareCopyBtn").addEventListener("click", async ()=>{
+    try{
+      await navigator.clipboard.writeText(els.shareLinkInput.value);
+      toast("Ссылка скопирована");
+    }catch(err){
+      els.shareLinkInput.select();
+      els.shareLinkInput.setSelectionRange(0, 99999);
+      try{
+        document.execCommand("copy");
+        toast("Ссылка скопирована");
+      }catch(e2){
+        toast("Не удалось скопировать — выделите ссылку вручную");
+      }
+    }
+  });
 
   /* ---------------- SAVE / DOWNLOAD ---------------- */
   $("#btnSave").addEventListener("click", ()=>{
@@ -835,6 +1152,8 @@
       e.returnValue = "";
     }
   });
+
+  boot();
 
 })();
 </script>
