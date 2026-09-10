@@ -177,7 +177,7 @@
 
   .entry-grid{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap:12px;
   }
   .entry-card{
@@ -273,7 +273,7 @@
   .rt-item .rt-del:hover{ background:var(--sand-0); color:var(--red); }
   .rt-item .rt-del svg{ width:13px; height:13px; }
 
-  #fileInput{ display:none; }
+  input[type="file"]{ display:none; }
 
   /* ---------- EDITOR VIEW ---------- */
   #view-editor{ overflow:hidden; }
@@ -363,6 +363,218 @@
   }
   .drop-hint.show{ display:flex; }
   .drop-hint svg{ width:26px; height:26px; opacity:0.6; }
+
+  /* ---------- BUILDER VIEW ---------- */
+  #view-builder{ overflow:hidden; }
+  .builder-body{
+    flex:1; min-height:0;
+    overflow-y:auto;
+    padding:18px 18px 100px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .builder-empty{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:12px;
+    color:var(--ink-3); text-align:center; font-size:13px; line-height:1.5;
+    padding:50px 20px;
+  }
+  .builder-empty svg{ width:32px; height:32px; opacity:0.5; }
+  .builder-empty.hide{ display:none; }
+
+  .block-list{
+    display:flex; flex-direction:column; gap:10px;
+    max-width:640px; width:100%; margin:0 auto;
+  }
+
+  .block-card{
+    background:var(--sand-1);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    padding:14px 14px 14px 12px;
+    display:flex; gap:10px; align-items:flex-start;
+    transition: border-color var(--dur-1) var(--ease), transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease);
+  }
+  .block-card.dragging{ opacity:0.4; }
+  .block-card:hover{ border-color:var(--line-strong); }
+
+  .block-grip{
+    display:flex; flex-direction:column; gap:3px; flex-shrink:0;
+    padding-top:3px; cursor:grab; touch-action:none;
+    color:var(--ink-3);
+  }
+  .block-grip:active{ cursor:grabbing; }
+  .block-grip svg{ width:15px; height:15px; }
+
+  .block-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; }
+  .block-top{ display:flex; align-items:center; gap:8px; }
+  .block-type-badge{
+    display:flex; align-items:center; gap:6px;
+    font-family:var(--mono); font-size:11px; color:var(--accent);
+    background:var(--accent-dim); border-radius:6px; padding:3px 8px;
+    flex-shrink:0;
+  }
+  .block-type-badge svg{ width:11px; height:11px; }
+  .block-summary{
+    flex:1; min-width:0;
+    font-size:12.5px; color:var(--ink-2);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+
+  .block-preview-thumb{
+    border-radius:8px; overflow:hidden;
+    border:1px solid var(--line);
+    background:var(--sand-2);
+  }
+  .block-preview-thumb img, .block-preview-thumb video{
+    display:block; width:100%; max-height:120px; object-fit:cover;
+  }
+  .block-preview-thumb .placeholder{
+    display:flex; align-items:center; justify-content:center;
+    height:70px; color:var(--ink-3); font-size:11.5px; gap:6px;
+  }
+  .block-preview-thumb .placeholder svg{ width:16px; height:16px; }
+
+  .block-text-preview{
+    font-size:13px; color:var(--ink-1); line-height:1.5;
+    max-height:60px; overflow:hidden;
+    white-space:pre-wrap;
+  }
+  .block-button-preview{
+    display:inline-flex; align-self:flex-start;
+    font-size:12.5px; font-weight:600;
+    padding:7px 14px; border-radius:8px;
+  }
+
+  .block-actions{
+    display:flex; align-items:center; gap:4px; flex-shrink:0;
+  }
+  .block-actions button{
+    all:unset; cursor:pointer;
+    width:28px; height:28px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:7px; color:var(--ink-3);
+    transition:background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+  .block-actions button:hover{ background:var(--sand-2); color:var(--ink-0); }
+  .block-actions button.danger:hover{ color:var(--red); }
+  .block-actions button svg{ width:14px; height:14px; }
+  .block-actions button:disabled{ opacity:0.3; pointer-events:none; }
+
+  .builder-addbar{
+    position:sticky; bottom:0;
+    max-width:640px; width:100%; margin:8px auto 0;
+    display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
+    background:var(--sand-0);
+    padding-top:10px;
+  }
+  .add-block-btn{
+    all:unset; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    font-size:11.5px; font-weight:560; color:var(--ink-1);
+    background:var(--sand-1); border:1px solid var(--line);
+    border-radius:10px; padding:12px 6px;
+    transition: all var(--dur-1) var(--ease);
+  }
+  .add-block-btn:hover{ border-color:var(--accent); color:var(--ink-0); transform:translateY(-2px); }
+  .add-block-btn svg{ width:17px; height:17px; }
+
+  /* ---------- EDIT SHEET (bottom sheet for block settings / background) ---------- */
+  .edit-sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:51;
+    max-width:520px; margin:0 auto;
+    background:var(--sand-1);
+    border:1px solid var(--line-strong);
+    border-top-left-radius:var(--radius-l); border-top-right-radius:var(--radius-l);
+    box-shadow:var(--shadow-lift);
+    padding:10px 20px calc(20px + env(safe-area-inset-bottom));
+    max-height:82vh; overflow-y:auto;
+    transform:translateY(100%);
+    transition: transform var(--dur-3) var(--ease);
+  }
+  .edit-sheet.show{ transform:translateY(0); }
+  .sheet-handle{
+    width:36px; height:4px; border-radius:3px;
+    background:var(--line-strong);
+    margin:0 auto 14px;
+  }
+  .sheet-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .sheet-head h3{ margin:0; font-size:15px; font-weight:650; }
+  .sheet-body{ display:flex; flex-direction:column; gap:16px; padding-bottom:6px; }
+
+  .field-group{ display:flex; flex-direction:column; gap:8px; }
+  .field-group .f-label{
+    font-family:var(--mono); font-size:11px; color:var(--ink-3);
+    letter-spacing:0.02em;
+  }
+  .field-group textarea, .field-group input[type="text"], .field-group input[type="url"]{
+    width:100%; background:var(--sand-2); border:1px solid var(--line);
+    border-radius:9px; padding:10px 12px;
+    font-family:var(--sans); font-size:13.5px; color:var(--ink-0);
+    outline:none; resize:vertical;
+    transition:border-color var(--dur-1) var(--ease);
+  }
+  .field-group textarea:focus, .field-group input:focus{ border-color:var(--accent); }
+  .field-group textarea{ min-height:90px; line-height:1.5; }
+
+  .upload-zone{
+    display:flex; align-items:center; gap:12px;
+    background:var(--sand-2); border:1.5px dashed var(--line-strong);
+    border-radius:10px; padding:12px;
+    cursor:pointer;
+    transition:border-color var(--dur-1) var(--ease);
+  }
+  .upload-zone:hover{ border-color:var(--accent); }
+  .upload-zone .uz-thumb{
+    width:52px; height:52px; border-radius:8px; flex-shrink:0;
+    background:var(--sand-3); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-3);
+  }
+  .upload-zone .uz-thumb img, .upload-zone .uz-thumb video{ width:100%; height:100%; object-fit:cover; }
+  .upload-zone .uz-thumb svg{ width:20px; height:20px; }
+  .upload-zone .uz-text{ font-size:12.5px; color:var(--ink-2); flex:1; }
+  .upload-zone .uz-text b{ color:var(--ink-0); display:block; font-size:13px; margin-bottom:2px; }
+
+  .seg-row{
+    display:flex; background:var(--sand-2); border:1px solid var(--line);
+    border-radius:10px; padding:3px; gap:2px;
+  }
+  .seg-row button{
+    all:unset; cursor:pointer; flex:1; text-align:center;
+    font-size:12.5px; font-weight:560; padding:8px 6px;
+    border-radius:8px; color:var(--ink-2);
+    transition:background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+  .seg-row button.active{ background:var(--sand-0); color:var(--ink-0); box-shadow:0 0 0 1px var(--line-strong); }
+  html[data-theme="light"] .seg-row button.active{ background:#fff; }
+
+  .color-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .color-swatch{
+    all:unset; cursor:pointer;
+    width:32px; height:32px; border-radius:9px;
+    border:2px solid transparent;
+    transition:transform var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+  }
+  .color-swatch.active{ border-color:var(--ink-0); transform:scale(1.08); }
+
+  .sheet-done-btn{
+    all:unset; cursor:pointer; text-align:center;
+    background:var(--accent); color:var(--accent-ink);
+    font-weight:650; font-size:14px;
+    padding:12px; border-radius:10px;
+    margin-top:4px;
+  }
+  .sheet-done-btn:hover{ filter:brightness(1.06); }
+
+  .sheet-remove-media{
+    all:unset; cursor:pointer;
+    font-size:12px; color:var(--ink-3);
+    text-align:center; padding:4px;
+  }
+  .sheet-remove-media:hover{ color:var(--red); }
 
   /* ---------- PREVIEW VIEW ---------- */
   #view-preview{
@@ -566,10 +778,13 @@
     .entry-card .kbd{ display:none; }
     .bar-btn .txt{ display:none; }
     .bar-btn.primary .txt{ display:inline; }
-    .filename-tag{ max-width:120px; }
+    .filename-tag{ max-width:100px; }
     .topbar{ padding:calc(12px + env(safe-area-inset-top)) 16px 12px; }
     .editor-bar{ padding:calc(10px + env(safe-area-inset-top)) 14px 10px; }
     #codeArea{ padding:16px 16px 32px; font-size:13px; }
+    .builder-addbar{ grid-template-columns:repeat(2,1fr); }
+    .builder-body{ padding:14px 14px 100px; }
+    #btnBg .txt{ display:none; }
   }
 
   @media (max-width: 480px){
@@ -632,6 +847,13 @@
           <span class="desc">Вставить HTML — сразу откроется предпросмотр</span>
           <span class="kbd">3</span>
         </button>
+
+        <button class="entry-card" id="btnBuilder">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="10" width="10" height="4" rx="1"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg></span>
+          <span class="label">Собрать сайт без кода</span>
+          <span class="desc">Добавляйте блоки — текст, картинки, видео, кнопки — и собирайте страницу визуально</span>
+          <span class="kbd">4</span>
+        </button>
       </div>
 
       <div class="home-recent" id="homeRecent">
@@ -682,6 +904,71 @@
         Отпустите, чтобы загрузить файл
       </div>
     </div>
+  </div>
+
+  <!-- ============ BUILDER VIEW (no-code site builder) ============ -->
+  <div class="view" id="view-builder">
+    <div class="editor-bar">
+      <div class="left">
+        <button class="back-btn" id="builderBack">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Назад
+        </button>
+        <span class="filename-tag" id="builderFilenameTag">сайт.html</span>
+      </div>
+      <div class="right" style="display:flex; align-items:center; gap:8px;">
+        <button class="obf-btn" id="btnBg" title="Фоновое изображение сайта">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span class="txt">Фон</span>
+        </button>
+        <button class="run-btn" id="builderRunBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Запустить
+        </button>
+      </div>
+    </div>
+
+    <div class="builder-body" id="builderBody">
+      <div class="builder-empty" id="builderEmpty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="10" width="10" height="4" rx="1"/><rect x="4" y="16" width="16" height="4" rx="1"/></svg>
+        <p>Пока нет ни одного блока.<br>Добавьте первый ниже.</p>
+      </div>
+      <div class="block-list" id="blockList"></div>
+      <div class="builder-addbar">
+        <button class="add-block-btn" data-add="text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M9 12h6M9 9h6M9 15h4"/></svg>
+          Текст
+        </button>
+        <button class="add-block-btn" data-add="image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Картинка
+        </button>
+        <button class="add-block-btn" data-add="video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>
+          Видео
+        </button>
+        <button class="add-block-btn" data-add="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>
+          Кнопка
+        </button>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="bgFileInput" accept="image/*">
+  <input type="file" id="blockImageInput" accept="image/*">
+  <input type="file" id="blockVideoInput" accept="video/*">
+
+  <!-- ============ BLOCK EDIT SHEET ============ -->
+  <div class="overlay" id="blockEditOverlay"></div>
+  <div class="edit-sheet" id="blockEditSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h3 id="editSheetTitle">Текстовый блок</h3>
+      <button class="close-x" id="editSheetClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="editSheetBody"></div>
   </div>
 
   <!-- ============ PREVIEW VIEW ============ -->
@@ -761,7 +1048,7 @@
   const $$ = (sel, ctx) => Array.from((ctx||document).querySelectorAll(sel));
 
   const els = {
-    views: { home: $("#view-home"), editor: $("#view-editor"), preview: $("#view-preview") },
+    views: { home: $("#view-home"), editor: $("#view-editor"), builder: $("#view-builder"), preview: $("#view-preview") },
     codeArea: $("#codeArea"),
     filenameTag: $("#filenameTag"),
     fileInput: $("#fileInput"),
@@ -784,7 +1071,21 @@
     shareCopyBtn: $("#shareCopyBtn"),
     shareModalClose: $("#shareModalClose"),
     shareStatus: $("#shareStatus"),
-    shareStatusText: $("#shareStatusText")
+    shareStatusText: $("#shareStatusText"),
+    // builder
+    builderFilenameTag: $("#builderFilenameTag"),
+    builderBody: $("#builderBody"),
+    builderEmpty: $("#builderEmpty"),
+    blockList: $("#blockList"),
+    btnBg: $("#btnBg"),
+    bgFileInput: $("#bgFileInput"),
+    blockImageInput: $("#blockImageInput"),
+    blockVideoInput: $("#blockVideoInput"),
+    blockEditOverlay: $("#blockEditOverlay"),
+    blockEditSheet: $("#blockEditSheet"),
+    editSheetTitle: $("#editSheetTitle"),
+    editSheetBody: $("#editSheetBody"),
+    editSheetClose: $("#editSheetClose")
   };
 
   /* ---------------- SHARE-LINK ENCODING (variant 1: code lives inside the URL, no server/DB) ----------------
@@ -919,10 +1220,565 @@
     return { html: result, changed: count, alreadyDone: false };
   }
 
-  /* ---------------- VIEW ROUTING (with History API for back-gesture) ---------------- */
+  /* ================================================================
+     NO-CODE SITE BUILDER
+     A visual, top-to-bottom block list (text / image / video / button)
+     that compiles down to a plain static HTML document. It reuses the
+     exact same run/save/share pipeline as hand-written code — the
+     builder is just another way to produce the `state.code` string.
+     ================================================================ */
+
+  const builder = {
+    background: null,   // data URL string, or null
+    blocks: []           // { id, type, ...fields }
+  };
+
+  function newBlockId(){
+    return "b" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  }
+
+  function makeDefaultBlock(type){
+    const id = newBlockId();
+    switch(type){
+      case "text":
+        return { id, type, content: "Новый текстовый блок", align:"left", size:"normal", color:"" };
+      case "image":
+        return { id, type, src:"", alt:"", width:"full", radius:true };
+      case "video":
+        return { id, type, src:"", autoplay:false, loop:false, muted:true, controls:true };
+      case "button":
+        return { id, type, label:"Нажми меня", link:"https://", align:"left", color:"accent", newTab:true };
+      default:
+        return { id, type:"text", content:"", align:"left", size:"normal", color:"" };
+    }
+  }
+
+  function findBlock(id){
+    return builder.blocks.find(b => b.id === id);
+  }
+
+  // Reads a File (image/video) into a data URL so the exported HTML is
+  // fully self-contained — no external file references, works offline.
+  function fileToDataUrl(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(reader.result);
+      reader.onerror = ()=> reject(new Error("Не удалось прочитать файл"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ---------------- RENDERING THE BLOCK LIST (editor-side cards, not the final site) ---------------- */
+
+  const BLOCK_META = {
+    text:   { label:"Текст",    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M9 12h6M9 9h6M9 15h4"/></svg>' },
+    image:  { label:"Картинка", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
+    video:  { label:"Видео",    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>' },
+    button: { label:"Кнопка",   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>' }
+  };
+
+  function renderBlockList(){
+    els.builderEmpty.classList.toggle("hide", builder.blocks.length > 0);
+    els.blockList.innerHTML = "";
+    builder.blocks.forEach((block, index)=>{
+      const card = document.createElement("div");
+      card.className = "block-card";
+      card.draggable = true;
+      card.dataset.id = block.id;
+
+      const meta = BLOCK_META[block.type];
+      let previewHtml = "";
+      if(block.type === "text"){
+        previewHtml = '<div class="block-text-preview">' + escapeHtml(block.content || "(пусто)") + '</div>';
+      } else if(block.type === "image"){
+        previewHtml = block.src
+          ? '<div class="block-preview-thumb"><img src="'+block.src+'" alt=""></div>'
+          : '<div class="block-preview-thumb"><div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>картинка не выбрана</div></div>';
+      } else if(block.type === "video"){
+        previewHtml = block.src
+          ? '<div class="block-preview-thumb"><video src="'+block.src+'" muted></video></div>'
+          : '<div class="block-preview-thumb"><div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>видео не выбрано</div></div>';
+      } else if(block.type === "button"){
+        const bg = block.color === "accent" ? "var(--accent)" : (block.color === "dark" ? "var(--ink-0)" : "transparent");
+        const fg = block.color === "outline" ? "var(--ink-0)" : (block.color === "accent" ? "var(--accent-ink)" : "#fff");
+        const border = block.color === "outline" ? "1px solid var(--line-strong)" : "none";
+        previewHtml = '<span class="block-button-preview" style="background:'+bg+';color:'+fg+';border:'+border+'">'+escapeHtml(block.label || "Кнопка")+'</span>';
+      }
+
+      card.innerHTML =
+        '<span class="block-grip" title="Перетащите, чтобы изменить порядок">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/></svg>' +
+        '</span>' +
+        '<div class="block-main">' +
+          '<div class="block-top">' +
+            '<span class="block-type-badge">'+meta.icon+meta.label+'</span>' +
+          '</div>' +
+          previewHtml +
+        '</div>' +
+        '<div class="block-actions">' +
+          '<button class="b-up" title="Переместить вверх" '+(index===0?"disabled":"")+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>' +
+          '<button class="b-down" title="Переместить вниз" '+(index===builder.blocks.length-1?"disabled":"")+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>' +
+          '<button class="b-edit" title="Настроить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+          '<button class="b-del danger" title="Удалить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg></button>' +
+        '</div>';
+
+      card.querySelector(".b-up").addEventListener("click", ()=> moveBlock(block.id, -1));
+      card.querySelector(".b-down").addEventListener("click", ()=> moveBlock(block.id, 1));
+      card.querySelector(".b-edit").addEventListener("click", ()=> openBlockEditor(block.id));
+      card.querySelector(".b-del").addEventListener("click", ()=> deleteBlock(block.id));
+
+      // Desktop drag-and-drop reordering
+      card.addEventListener("dragstart", (e)=>{
+        card.classList.add("dragging");
+        e.dataTransfer.setData("text/plain", block.id);
+        e.dataTransfer.effectAllowed = "move";
+      });
+      card.addEventListener("dragend", ()=> card.classList.remove("dragging"));
+
+      els.blockList.appendChild(card);
+    });
+  }
+
+  els.blockList.addEventListener("dragover", (e)=>{
+    e.preventDefault();
+    const dragging = els.blockList.querySelector(".block-card.dragging");
+    if(!dragging) return;
+    const afterEl = getDragAfterElement(els.blockList, e.clientY);
+    if(afterEl == null){
+      els.blockList.appendChild(dragging);
+    } else {
+      els.blockList.insertBefore(dragging, afterEl);
+    }
+  });
+  els.blockList.addEventListener("drop", (e)=>{
+    e.preventDefault();
+    // Rebuild the builder.blocks order from the current DOM order.
+    const newOrder = $$(".block-card", els.blockList).map(el => el.dataset.id);
+    builder.blocks.sort((a,b)=> newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+    renderBlockList();
+  });
+
+  function getDragAfterElement(container, y){
+    const cards = $$(".block-card:not(.dragging)", container);
+    let closest = { offset: -Infinity, element: null };
+    cards.forEach(card=>{
+      const box = card.getBoundingClientRect();
+      const offset = y - box.top - box.height/2;
+      if(offset < 0 && offset > closest.offset){
+        closest = { offset, element: card };
+      }
+    });
+    return closest.element;
+  }
+
+  function moveBlock(id, dir){
+    const i = builder.blocks.findIndex(b => b.id === id);
+    const j = i + dir;
+    if(i<0 || j<0 || j>=builder.blocks.length) return;
+    const tmp = builder.blocks[i];
+    builder.blocks[i] = builder.blocks[j];
+    builder.blocks[j] = tmp;
+    renderBlockList();
+  }
+
+  function deleteBlock(id){
+    builder.blocks = builder.blocks.filter(b => b.id !== id);
+    renderBlockList();
+  }
+
+  function addBlock(type){
+    const block = makeDefaultBlock(type);
+    builder.blocks.push(block);
+    renderBlockList();
+    openBlockEditor(block.id, /*isNew*/ true);
+  }
+
+  $$(".add-block-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=> addBlock(btn.dataset.add));
+  });
+
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : String(str);
+    return div.innerHTML;
+  }
+
+  /* ---------------- BLOCK EDIT SHEET (bottom sheet with per-type fields) ---------------- */
+
+  function openSheet(){
+    els.blockEditOverlay.classList.add("show");
+    els.blockEditSheet.classList.add("show");
+  }
+  function closeSheet(){
+    els.blockEditOverlay.classList.remove("show");
+    els.blockEditSheet.classList.remove("show");
+  }
+  els.blockEditOverlay.addEventListener("click", closeSheet);
+  els.editSheetClose.addEventListener("click", closeSheet);
+
+  function openBlockEditor(id){
+    const block = findBlock(id);
+    if(!block) return;
+    els.editSheetTitle.textContent = BLOCK_META[block.type].label + " — настройки";
+    els.editSheetBody.innerHTML = "";
+    const build = {
+      text: buildTextEditor,
+      image: buildImageEditor,
+      video: buildVideoEditor,
+      button: buildButtonEditor
+    }[block.type];
+    build(block);
+    openSheet();
+  }
+
+  function addDoneButton(onDone){
+    const done = document.createElement("button");
+    done.className = "sheet-done-btn";
+    done.textContent = "Готово";
+    done.addEventListener("click", ()=>{
+      if(onDone) onDone();
+      renderBlockList();
+      closeSheet();
+    });
+    els.editSheetBody.appendChild(done);
+  }
+
+  function fieldGroup(labelText){
+    const wrap = document.createElement("div");
+    wrap.className = "field-group";
+    const label = document.createElement("div");
+    label.className = "f-label";
+    label.textContent = labelText;
+    wrap.appendChild(label);
+    els.editSheetBody.appendChild(wrap);
+    return wrap;
+  }
+
+  function segRow(wrap, options, current, onChange){
+    const row = document.createElement("div");
+    row.className = "seg-row";
+    options.forEach(opt=>{
+      const b = document.createElement("button");
+      b.textContent = opt.label;
+      b.type = "button";
+      b.classList.toggle("active", opt.value === current);
+      b.addEventListener("click", ()=>{
+        $$("button", row).forEach(x=>x.classList.remove("active"));
+        b.classList.add("active");
+        onChange(opt.value);
+      });
+      row.appendChild(b);
+    });
+    wrap.appendChild(row);
+    return row;
+  }
+
+  function buildTextEditor(block){
+    const g1 = fieldGroup("СОДЕРЖИМОЕ");
+    const ta = document.createElement("textarea");
+    ta.value = block.content;
+    ta.placeholder = "Введите текст блока…";
+    ta.addEventListener("input", ()=> block.content = ta.value);
+    g1.appendChild(ta);
+
+    const g2 = fieldGroup("ВЫРАВНИВАНИЕ");
+    segRow(g2, [
+      {label:"Слева", value:"left"}, {label:"По центру", value:"center"}, {label:"Справа", value:"right"}
+    ], block.align, v => block.align = v);
+
+    const g3 = fieldGroup("РАЗМЕР ТЕКСТА");
+    segRow(g3, [
+      {label:"Мелкий", value:"small"}, {label:"Обычный", value:"normal"}, {label:"Крупный", value:"large"}
+    ], block.size, v => block.size = v);
+
+    addDoneButton();
+  }
+
+  function buildImageEditor(block){
+    const g1 = fieldGroup("ИЗОБРАЖЕНИЕ");
+    const zone = document.createElement("div");
+    zone.className = "upload-zone";
+    zone.innerHTML =
+      '<span class="uz-thumb">' + (block.src ? '<img src="'+block.src+'">' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>') + '</span>' +
+      '<span class="uz-text"><b>' + (block.src ? "Заменить картинку" : "Загрузить картинку") + '</b>с устройства, сохранится прямо в файле</span>';
+    zone.addEventListener("click", ()=>{
+      els.blockImageInput.onchange = async (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        try{
+          block.src = await fileToDataUrl(file);
+          openBlockEditor(block.id); // re-render sheet with new thumbnail
+        }catch(err){ toast("Не удалось загрузить картинку"); }
+        els.blockImageInput.value = "";
+      };
+      els.blockImageInput.click();
+    });
+    g1.appendChild(zone);
+
+    if(block.src){
+      const rm = document.createElement("button");
+      rm.className = "sheet-remove-media";
+      rm.textContent = "Убрать картинку";
+      rm.addEventListener("click", ()=>{ block.src=""; openBlockEditor(block.id); });
+      g1.appendChild(rm);
+    }
+
+    const g2 = fieldGroup("АЛЬТЕРНАТИВНЫЙ ТЕКСТ (для доступности)");
+    const alt = document.createElement("input");
+    alt.type = "text"; alt.value = block.alt; alt.placeholder = "Например: логотип компании";
+    alt.addEventListener("input", ()=> block.alt = alt.value);
+    g2.appendChild(alt);
+
+    const g3 = fieldGroup("ШИРИНА");
+    segRow(g3, [
+      {label:"Small", value:"small"}, {label:"Средняя", value:"medium"}, {label:"Во всю ширину", value:"full"}
+    ], block.width, v => block.width = v);
+
+    const g4 = fieldGroup("СКРУГЛЁННЫЕ УГЛЫ");
+    segRow(g4, [ {label:"Да", value:"yes"}, {label:"Нет", value:"no"} ], block.radius ? "yes" : "no", v => block.radius = (v==="yes"));
+
+    addDoneButton();
+  }
+
+  function buildVideoEditor(block){
+    const g1 = fieldGroup("ВИДЕО");
+    const zone = document.createElement("div");
+    zone.className = "upload-zone";
+    zone.innerHTML =
+      '<span class="uz-thumb">' + (block.src ? '<video src="'+block.src+'" muted></video>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>') + '</span>' +
+      '<span class="uz-text"><b>' + (block.src ? "Заменить видео" : "Загрузить видео") + '</b>с устройства, сохранится прямо в файле</span>';
+    zone.addEventListener("click", ()=>{
+      els.blockVideoInput.onchange = async (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        toast("Загружаем видео…");
+        try{
+          block.src = await fileToDataUrl(file);
+          openBlockEditor(block.id);
+        }catch(err){ toast("Не удалось загрузить видео"); }
+        els.blockVideoInput.value = "";
+      };
+      els.blockVideoInput.click();
+    });
+    g1.appendChild(zone);
+
+    if(block.src){
+      const rm = document.createElement("button");
+      rm.className = "sheet-remove-media";
+      rm.textContent = "Убрать видео";
+      rm.addEventListener("click", ()=>{ block.src=""; openBlockEditor(block.id); });
+      g1.appendChild(rm);
+    }
+
+    const g2 = fieldGroup("ВОСПРОИЗВЕДЕНИЕ");
+    segRow(g2, [ {label:"Автоплей", value:"auto"}, {label:"По клику", value:"manual"} ],
+      block.autoplay ? "auto" : "manual", v => block.autoplay = (v==="auto"));
+
+    const g3 = fieldGroup("ПОВТОР");
+    segRow(g3, [ {label:"Зациклить", value:"yes"}, {label:"Один раз", value:"no"} ],
+      block.loop ? "yes" : "no", v => block.loop = (v==="yes"));
+
+    const g4 = fieldGroup("ЗВУК");
+    segRow(g4, [ {label:"Без звука", value:"muted"}, {label:"Со звуком", value:"sound"} ],
+      block.muted ? "muted" : "sound", v => block.muted = (v==="muted"));
+
+    addDoneButton();
+  }
+
+  function buildButtonEditor(block){
+    const g1 = fieldGroup("ТЕКСТ КНОПКИ");
+    const label = document.createElement("input");
+    label.type="text"; label.value=block.label; label.placeholder="Например: Написать нам";
+    label.addEventListener("input", ()=> block.label = label.value);
+    g1.appendChild(label);
+
+    const g2 = fieldGroup("КУДА ВЕДЁТ (ССЫЛКА)");
+    const link = document.createElement("input");
+    link.type="url"; link.value=block.link; link.placeholder="https://example.com";
+    link.addEventListener("input", ()=> block.link = link.value);
+    g2.appendChild(link);
+
+    const g3 = fieldGroup("ВЫРАВНИВАНИЕ");
+    segRow(g3, [
+      {label:"Слева", value:"left"}, {label:"По центру", value:"center"}, {label:"Справа", value:"right"}
+    ], block.align, v => block.align = v);
+
+    const g4 = fieldGroup("СТИЛЬ");
+    segRow(g4, [
+      {label:"Акцент", value:"accent"}, {label:"Тёмная", value:"dark"}, {label:"Контур", value:"outline"}
+    ], block.color, v => block.color = v);
+
+    const g5 = fieldGroup("ОТКРЫВАТЬ");
+    segRow(g5, [ {label:"В новой вкладке", value:"yes"}, {label:"В этой же", value:"no"} ],
+      block.newTab ? "yes" : "no", v => block.newTab = (v==="yes"));
+
+    addDoneButton();
+  }
+
+  /* ---------------- BACKGROUND PICKER ---------------- */
+  els.btnBg.addEventListener("click", ()=>{
+    els.editSheetTitle.textContent = "Фон сайта";
+    els.editSheetBody.innerHTML = "";
+
+    const g1 = fieldGroup("ФОНОВОЕ ИЗОБРАЖЕНИЕ");
+    const zone = document.createElement("div");
+    zone.className = "upload-zone";
+    zone.innerHTML =
+      '<span class="uz-thumb">' + (builder.background ? '<img src="'+builder.background+'">' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>') + '</span>' +
+      '<span class="uz-text"><b>' + (builder.background ? "Заменить фон" : "Выбрать фон") + '</b>изображение растянется на весь сайт</span>';
+    zone.addEventListener("click", ()=>{
+      els.bgFileInput.onchange = async (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        try{
+          builder.background = await fileToDataUrl(file);
+          els.btnBg.click(); // re-render sheet with new thumbnail
+        }catch(err){ toast("Не удалось загрузить изображение"); }
+        els.bgFileInput.value = "";
+      };
+      els.bgFileInput.click();
+    });
+    g1.appendChild(zone);
+
+    if(builder.background){
+      const rm = document.createElement("button");
+      rm.className = "sheet-remove-media";
+      rm.textContent = "Убрать фон";
+      rm.addEventListener("click", ()=>{ builder.background=""; els.btnBg.click(); });
+      g1.appendChild(rm);
+    }
+
+    addDoneButton();
+    openSheet();
+  });
+
+  /* ---------------- COMPILING BLOCKS INTO A STATIC HTML DOCUMENT ---------------- */
+
+  function buildSiteHtml(opts){
+    opts = opts || {};
+    const bgStyle = builder.background
+      ? `background-image:url('${builder.background}');background-size:cover;background-position:center;background-attachment:fixed;`
+      : "background:#ffffff;";
+
+    const blocksHtml = builder.blocks.map(block=>{
+      if(block.type === "text"){
+        const sizeMap = { small:"14px", normal:"18px", large:"28px" };
+        const style = `text-align:${block.align};font-size:${sizeMap[block.size]};line-height:1.6;` + (block.color ? `color:${block.color};` : "");
+        return `  <p style="${style}">${escapeHtml(block.content).replace(/\n/g,"<br>")}</p>\n`;
+      }
+      if(block.type === "image"){
+        if(!block.src) return "";
+        const widthMap = { small:"280px", medium:"560px", full:"100%" };
+        const style = `max-width:${widthMap[block.width]};width:100%;display:block;margin:0 auto;` + (block.radius ? "border-radius:14px;" : "");
+        return `  <img src="${block.src}" alt="${escapeHtml(block.alt)}" style="${style}">\n`;
+      }
+      if(block.type === "video"){
+        if(!block.src) return "";
+        const attrs = [
+          block.autoplay ? "autoplay" : "",
+          block.loop ? "loop" : "",
+          block.muted ? "muted" : "",
+          block.controls !== false ? "controls" : "",
+          "playsinline"
+        ].filter(Boolean).join(" ");
+        return `  <video src="${block.src}" ${attrs} style="max-width:100%;width:100%;display:block;margin:0 auto;border-radius:10px;"></video>\n`;
+      }
+      if(block.type === "button"){
+        const bgMap = { accent:"#c15f3c", dark:"#17181a", outline:"transparent" };
+        const fgMap = { accent:"#fdf6f2", dark:"#ffffff", outline:"#17181a" };
+        const borderStyle = block.color === "outline" ? "border:2px solid #17181a;" : "border:none;";
+        const wrapStyle = `text-align:${block.align};`;
+        const target = block.newTab ? ' target="_blank" rel="noopener noreferrer"' : "";
+        const rawLink = block.link && block.link.trim() ? block.link.trim() : "";
+        const isDangerousScheme = /^\s*(javascript|data|vbscript):/i.test(rawLink);
+        const href = (rawLink && !isDangerousScheme) ? rawLink : "#";
+        return `  <div style="${wrapStyle}"><a href="${escapeAttr(href)}"${target} style="display:inline-block;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;background:${bgMap[block.color]};color:${fgMap[block.color]};${borderStyle}">${escapeHtml(block.label)}</a></div>\n`;
+      }
+      return "";
+    }).join("\n");
+
+    // The "create with qubit html runner" strip is real HTML/CSS/JS baked into
+    // the document — it is genuinely part of the file's source, not an overlay
+    // added by the host app. Clicking it tells the parent window (this app,
+    // when viewed inside the preview iframe) to go home; opened as a
+    // standalone file, window.parent === window and the click is a no-op.
+    const bannerHtml = opts.withBanner ? `<div id="qhr-banner" style="position:sticky;top:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:10px 16px;background:#f3ddd2;border-bottom:1px solid rgba(20,20,15,0.1);font-family:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;">
+  <button id="qhr-banner-btn" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:7px;color:#c15f3c;font-weight:700;font-size:11.5px;letter-spacing:0.02em;">
+    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
+    create with qubit html runner
+  </button>
+</div>
+<script>
+  document.getElementById("qhr-banner-btn").addEventListener("click", function(){
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage({ type: "qhr-banner-home" }, "*");
+    }
+  });
+<\/script>
+` : "";
+
+    return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(state.filename.replace(/\.html?$/i,"")) || "Мой сайт"}</title>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    ${bgStyle}
+  }
+  .qhr-wrap{
+    max-width:720px; margin:0 auto;
+    padding:48px 24px;
+    display:flex; flex-direction:column; gap:24px;
+  }
+</style>
+</head>
+<body>
+${bannerHtml}<div class="qhr-wrap">
+${blocksHtml}</div>
+</body>
+</html>`;
+  }
+
+  function escapeAttr(str){
+    return String(str).replace(/"/g, "&quot;");
+  }
+
+  /* ---------------- ENTRY POINT + RUN WIRING ---------------- */
+
+  $("#btnBuilder").addEventListener("click", ()=>{
+    builder.background = null;
+    builder.blocks = [];
+    state.filename = "сайт.html";
+    els.builderFilenameTag.textContent = state.filename;
+    renderBlockList();
+    goTo("builder");
+  });
+
+  $("#builderBack").addEventListener("click", ()=> history.back());
+
+  $("#builderRunBtn").addEventListener("click", ()=>{
+    if(builder.blocks.length === 0){
+      toast("Добавьте хотя бы один блок");
+      return;
+    }
+    const html = buildSiteHtml({ withBanner: true });
+    els.codeArea.value = html; // keep the editor in sync, so "Редактировать" after preview shows real code
+    state.code = html;
+    if(!isSharedSession){
+      addToHistory(state.filename || "сайт.html", html);
+    }
+    els.previewTitle.textContent = state.filename;
+    els.controlBar.classList.remove("hidden");
+    goTo("preview");
+    renderFrame();
+  });
   // Each view push adds a history entry so the system/browser back gesture
   // moves to the previous screen instead of leaving the app.
-  const ROUTE_ORDER = ["home", "editor", "preview"];
 
   function renderView(name){
     Object.entries(els.views).forEach(([k,v])=>{
@@ -961,6 +1817,22 @@
     els.sharedBanner.style.display = "none";
     history.replaceState({ view: "home" }, "", location.pathname + location.search);
     renderView("home");
+  });
+
+  // The "create with qubit html runner" banner is rendered INSIDE the previewed
+  // document itself (see buildSiteHtml's BUILDER_BANNER_SNIPPET) — it is real
+  // HTML that lives in the generated file, not a floating element bolted onto
+  // this app. Since it lives inside the sandboxed iframe, a click on it can't
+  // navigate this app directly — it asks to, via postMessage, and we decide
+  // what "go home" means from the outside. This also means the banner behaves
+  // correctly for free: it disappears the instant the iframe's content changes
+  // or the preview closes, with no separate show/hide state to keep in sync.
+  window.addEventListener("message", (e)=>{
+    if(e.source !== els.previewFrame.contentWindow) return;
+    if(e.data && e.data.type === "qhr-banner-home"){
+      history.replaceState({ view: "home" }, "", location.pathname + location.search);
+      renderView("home");
+    }
   });
 
   /* ---------------- Boot: check whether we were opened via a share-link ---------------- */
