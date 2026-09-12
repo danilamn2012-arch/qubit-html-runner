@@ -463,20 +463,44 @@
   .builder-addbar{
     position:sticky; bottom:0;
     max-width:640px; width:100%; margin:8px auto 0;
-    display:grid; grid-template-columns:repeat(4,1fr); gap:8px;
     background:var(--sand-0);
     padding-top:10px;
   }
-  .add-block-btn{
+  .add-block-main-btn{
+    all:unset; box-sizing:border-box; cursor:pointer; width:100%;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-size:13.5px; font-weight:650; color:var(--accent-ink);
+    background:var(--accent);
+    border-radius:11px; padding:13px;
+    box-shadow: 0 8px 24px -10px var(--accent-dim);
+    transition: filter var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+  }
+  .add-block-main-btn:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+  .add-block-main-btn svg{ width:16px; height:16px; }
+
+  .picker-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+    padding-bottom:6px;
+  }
+  .picker-item{
     all:unset; cursor:pointer;
-    display:flex; flex-direction:column; align-items:center; gap:6px;
-    font-size:11.5px; font-weight:560; color:var(--ink-1);
-    background:var(--sand-1); border:1px solid var(--line);
-    border-radius:10px; padding:12px 6px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    text-align:center;
+    font-size:12px; font-weight:560; color:var(--ink-1);
+    background:var(--sand-2); border:1px solid var(--line);
+    border-radius:12px; padding:16px 8px;
     transition: all var(--dur-1) var(--ease);
   }
-  .add-block-btn:hover{ border-color:var(--accent); color:var(--ink-0); transform:translateY(-2px); }
-  .add-block-btn svg{ width:17px; height:17px; }
+  .picker-item:hover{ border-color:var(--accent); color:var(--ink-0); transform:translateY(-2px); }
+  .picker-item .pi-ic{
+    width:34px; height:34px; border-radius:9px;
+    background:var(--accent-dim); color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .picker-item .pi-ic svg{ width:17px; height:17px; }
+  @media (max-width:420px){
+    .picker-grid{ grid-template-columns:repeat(2,1fr); }
+  }
 
   /* ---------- EDIT SHEET (bottom sheet for block settings / background) ---------- */
   .edit-sheet{
@@ -503,6 +527,18 @@
   }
   .sheet-head h3{ margin:0; font-size:15px; font-weight:650; }
   .sheet-body{ display:flex; flex-direction:column; gap:16px; padding-bottom:6px; }
+
+  .close-x{
+    all:unset; cursor:pointer; box-sizing:border-box;
+    width:30px; height:30px; flex-shrink:0;
+    border-radius:9px;
+    background:var(--sand-2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-2);
+    transition:background var(--dur-1) var(--ease), color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+  }
+  .close-x:hover{ background:var(--sand-3); color:var(--ink-0); border-color:var(--line-strong); }
+  .close-x svg{ width:14px; height:14px; }
 
   .field-group{ display:flex; flex-direction:column; gap:8px; }
   .field-group .f-label{
@@ -782,7 +818,6 @@
     .topbar{ padding:calc(12px + env(safe-area-inset-top)) 16px 12px; }
     .editor-bar{ padding:calc(10px + env(safe-area-inset-top)) 14px 10px; }
     #codeArea{ padding:16px 16px 32px; font-size:13px; }
-    .builder-addbar{ grid-template-columns:repeat(2,1fr); }
     .builder-body{ padding:14px 14px 100px; }
     #btnBg .txt{ display:none; }
   }
@@ -935,21 +970,9 @@
       </div>
       <div class="block-list" id="blockList"></div>
       <div class="builder-addbar">
-        <button class="add-block-btn" data-add="text">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M9 12h6M9 9h6M9 15h4"/></svg>
-          Текст
-        </button>
-        <button class="add-block-btn" data-add="image">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          Картинка
-        </button>
-        <button class="add-block-btn" data-add="video">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>
-          Видео
-        </button>
-        <button class="add-block-btn" data-add="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>
-          Кнопка
+        <button class="add-block-main-btn" id="btnAddBlock">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Добавить блок
         </button>
       </div>
     </div>
@@ -957,6 +980,7 @@
   <input type="file" id="bgFileInput" accept="image/*">
   <input type="file" id="blockImageInput" accept="image/*">
   <input type="file" id="blockVideoInput" accept="video/*">
+  <input type="file" id="galleryImageInput" accept="image/*" multiple>
 
   <!-- ============ BLOCK EDIT SHEET ============ -->
   <div class="overlay" id="blockEditOverlay"></div>
@@ -969,6 +993,19 @@
       </button>
     </div>
     <div class="sheet-body" id="editSheetBody"></div>
+  </div>
+
+  <!-- ============ ADD-BLOCK PICKER SHEET ============ -->
+  <div class="overlay" id="addPickerOverlay"></div>
+  <div class="edit-sheet" id="addPickerSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h3>Добавить блок</h3>
+      <button class="close-x" id="addPickerClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="picker-grid" id="pickerGrid"></div>
   </div>
 
   <!-- ============ PREVIEW VIEW ============ -->
@@ -1041,7 +1078,12 @@
   /* ---------------- STATE ---------------- */
   const state = {
     code: "",
-    filename: "index.html"
+    filename: "index.html",
+    // When the current preview came straight from the visual builder, this
+    // holds the compact { background, blocks } data so share links can encode
+    // just that (much smaller) instead of the full generated HTML document.
+    // Any manual edit to the code invalidates it, since the two could drift apart.
+    builderData: null
   };
 
   const $ = (sel, ctx) => (ctx||document).querySelector(sel);
@@ -1081,11 +1123,15 @@
     bgFileInput: $("#bgFileInput"),
     blockImageInput: $("#blockImageInput"),
     blockVideoInput: $("#blockVideoInput"),
+    galleryImageInput: $("#galleryImageInput"),
     blockEditOverlay: $("#blockEditOverlay"),
     blockEditSheet: $("#blockEditSheet"),
     editSheetTitle: $("#editSheetTitle"),
     editSheetBody: $("#editSheetBody"),
-    editSheetClose: $("#editSheetClose")
+    editSheetClose: $("#editSheetClose"),
+    addPickerOverlay: $("#addPickerOverlay"),
+    addPickerSheet: $("#addPickerSheet"),
+    pickerGrid: $("#pickerGrid")
   };
 
   /* ---------------- SHARE-LINK ENCODING (variant 1: code lives inside the URL, no server/DB) ----------------
@@ -1134,30 +1180,90 @@
 
   const canCompress = (typeof CompressionStream !== "undefined") && (typeof DecompressionStream !== "undefined");
 
-  async function encodeCodeToParam(code){
-    const utf8 = new TextEncoder().encode(code);
+  // Link format markers (first character of the hash payload):
+  //   z = gzip-compressed full HTML           (original format, kept as-is)
+  //   r = raw/uncompressed full HTML          (original fallback format)
+  //   Z = gzip-compressed compact builder data (background + blocks JSON)
+  //   R = raw/uncompressed compact builder data
+  // Reusing z/r for the new compact format would be ambiguous — a base64url
+  // payload can legitimately start with any letter, so there's no safe way
+  // to tell "old full-HTML link" apart from "new compact link" if they share
+  // the same leading byte. Separate marker letters sidestep that entirely,
+  // so links already shared under the old scheme keep working unchanged.
+
+  async function packPayload(str, compactFormat){
+    const utf8 = new TextEncoder().encode(str);
     if(canCompress){
       const cs = new CompressionStream("gzip");
       const compressedStream = new Blob([utf8]).stream().pipeThrough(cs);
       const compressedBytes = await streamToBytes(compressedStream);
-      return "z" + toUrlSafeB64(bytesToBase64(compressedBytes));
+      return (compactFormat ? "Z" : "z") + toUrlSafeB64(bytesToBase64(compressedBytes));
     }
-    return "r" + toUrlSafeB64(bytesToBase64(utf8));
+    return (compactFormat ? "R" : "r") + toUrlSafeB64(bytesToBase64(utf8));
   }
 
-  async function decodeParamToCode(param){
+  async function unpackPayload(param){
     const marker = param.charAt(0);
     const payload = param.slice(1);
     const bytes = base64ToBytes(fromUrlSafeB64(payload));
-    if(marker === "z"){
+    const isCompact = (marker === "Z" || marker === "R");
+    const isCompressed = (marker === "z" || marker === "Z");
+    let str;
+    if(isCompressed){
       if(!canCompress) throw new Error("Этот браузер не поддерживает распаковку — обновите браузер.");
       const ds = new DecompressionStream("gzip");
       const decompressedStream = new Blob([bytes]).stream().pipeThrough(ds);
       const rawBytes = await streamToBytes(decompressedStream);
-      return new TextDecoder().decode(rawBytes);
+      str = new TextDecoder().decode(rawBytes);
+    } else if(marker === "r" || marker === "R"){
+      str = new TextDecoder().decode(bytes);
+    } else {
+      throw new Error("Неизвестный формат ссылки.");
     }
-    // marker === "r" (raw, uncompressed fallback)
-    return new TextDecoder().decode(bytes);
+    return { kind: isCompact ? "b" : "h", data: str };
+  }
+
+  // Full-HTML link — used for anything not fresh out of the visual builder
+  // (hand-written/uploaded/pasted code, or builder output that's since been
+  // hand-edited).
+  async function encodeCodeToParam(code){
+    return packPayload(code, false);
+  }
+
+  // Compact link — used right after the builder generates a site. Encodes
+  // only the actual content (background + block list) as JSON, letting the
+  // recipient's copy of this same app rebuild the full HTML locally. Since
+  // the generated HTML's CSS/wrapper boilerplate never has to travel over
+  // the link, this is meaningfully shorter for typical multi-block sites.
+  async function encodeBuilderDataToParam(builderData){
+    return packPayload(JSON.stringify(builderData), true);
+  }
+
+  async function decodeParamToCode(param){
+    const { kind, data } = await unpackPayload(param);
+    if(kind === "b"){
+      let parsed;
+      try{
+        parsed = JSON.parse(data);
+      }catch(err){
+        throw new Error("Не удалось прочитать содержимое ссылки.");
+      }
+      // Rebuild the full HTML the same way the builder itself would, using
+      // the shared blocks/background — reuses all the same escaping and
+      // safety checks (dangerous-scheme link filtering, etc.) as normal.
+      const savedBackground = builder.background;
+      const savedBlocks = builder.blocks;
+      try{
+        builder.background = parsed.bg || null;
+        builder.blocks = Array.isArray(parsed.blocks) ? parsed.blocks : [];
+        return buildSiteHtml({ withBanner: true });
+      } finally {
+        builder.background = savedBackground;
+        builder.blocks = savedBlocks;
+      }
+    }
+    // kind === "h": data is already the full HTML string.
+    return data;
   }
 
   /* ---------------- CODE OBFUSCATION (make inline JS hard to read at a glance) ----------------
@@ -1240,16 +1346,32 @@
   function makeDefaultBlock(type){
     const id = newBlockId();
     switch(type){
+      case "heading":
+        return { id, type, content: "Заголовок раздела", level:"h2", align:"left" };
       case "text":
-        return { id, type, content: "Новый текстовый блок", align:"left", size:"normal", color:"" };
+        return { id, type, content: "Новый текстовый блок", align:"left", size:"normal", color:"", font:"sans", weight:"normal" };
       case "image":
-        return { id, type, src:"", alt:"", width:"full", radius:true };
+        return { id, type, src:"", alt:"", width:"full", radius:true, link:"" };
+      case "gallery":
+        return { id, type, images:[], columns:"2" };
       case "video":
         return { id, type, src:"", autoplay:false, loop:false, muted:true, controls:true };
       case "button":
-        return { id, type, label:"Нажми меня", link:"https://", align:"left", color:"accent", newTab:true };
+        return { id, type, label:"Нажми меня", link:"https://", align:"left", color:"accent", newTab:true, width:"auto" };
+      case "feature":
+        return { id, type, icon:"✨", title:"Преимущество", text:"Короткое описание того, чем это полезно.", align:"center" };
+      case "social":
+        return { id, type, links:[ {label:"Telegram", url:"https://t.me/"}, {label:"Instagram", url:"https://instagram.com/"} ], align:"center" };
+      case "divider":
+        return { id, type, style:"solid", spacing:"medium" };
+      case "spacer":
+        return { id, type, size:"medium" };
+      case "embed":
+        return { id, type, url:"", height:"400" };
+      case "contactform":
+        return { id, type, email:"", title:"Свяжитесь с нами", buttonLabel:"Отправить" };
       default:
-        return { id, type:"text", content:"", align:"left", size:"normal", color:"" };
+        return { id, type:"text", content:"", align:"left", size:"normal", color:"", font:"sans", weight:"normal" };
     }
   }
 
@@ -1271,10 +1393,18 @@
   /* ---------------- RENDERING THE BLOCK LIST (editor-side cards, not the final site) ---------------- */
 
   const BLOCK_META = {
-    text:   { label:"Текст",    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M9 12h6M9 9h6M9 15h4"/></svg>' },
-    image:  { label:"Картинка", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
-    video:  { label:"Видео",    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>' },
-    button: { label:"Кнопка",   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>' }
+    heading:     { label:"Заголовок",   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16M18 4v16M6 12h12"/></svg>' },
+    text:        { label:"Текст",       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M20 7V5a1 1 0 0 0-1-1h-2M20 17v2a1 1 0 0 1-1 1h-2"/><path d="M9 12h6M9 9h6M9 15h4"/></svg>' },
+    image:       { label:"Картинка",    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
+    gallery:     { label:"Галерея",     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' },
+    video:       { label:"Видео",       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 10l6-3v10l-6-3"/></svg>' },
+    button:      { label:"Кнопка",      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>' },
+    feature:     { label:"Преимущество",icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.6L18.4 21 12 16.4 5.6 21 8 13.8l-6-4.6h7.6z"/></svg>' },
+    social:      { label:"Соцсети",     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-3.9M8.6 13.4l6.8 3.9"/></svg>' },
+    divider:     { label:"Разделитель", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/></svg>' },
+    spacer:      { label:"Отступ",      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v4M12 16v4M5 8l7-4 7 4M5 16l7 4 7-4"/></svg>' },
+    embed:       { label:"Embed",       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>' },
+    contactform: { label:"Форма",       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M7 13h4M7 16h7"/></svg>' }
   };
 
   function renderBlockList(){
@@ -1288,12 +1418,25 @@
 
       const meta = BLOCK_META[block.type];
       let previewHtml = "";
-      if(block.type === "text"){
-        previewHtml = '<div class="block-text-preview">' + escapeHtml(block.content || "(пусто)") + '</div>';
+      if(block.type === "heading"){
+        const sizeMap = { h1:"22px", h2:"18px", h3:"15px" };
+        previewHtml = '<div class="block-text-preview" style="font-weight:700;font-size:'+sizeMap[block.level]+';text-align:'+block.align+'">' + escapeHtml(block.content || "(пусто)") + '</div>';
+      } else if(block.type === "text"){
+        const fw = block.weight === "bold" ? "700" : "400";
+        const ff = block.font === "mono" ? "var(--mono)" : "inherit";
+        previewHtml = '<div class="block-text-preview" style="font-weight:'+fw+';font-family:'+ff+'">' + escapeHtml(block.content || "(пусто)") + '</div>';
       } else if(block.type === "image"){
         previewHtml = block.src
           ? '<div class="block-preview-thumb"><img src="'+block.src+'" alt=""></div>'
           : '<div class="block-preview-thumb"><div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>картинка не выбрана</div></div>';
+      } else if(block.type === "gallery"){
+        if(block.images && block.images.length){
+          previewHtml = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;">' +
+            block.images.slice(0,4).map(src=>'<div class="block-preview-thumb"><img src="'+src+'" style="height:44px;"></div>').join('') +
+            '</div>' + (block.images.length>4 ? '<div class="block-summary">и ещё '+(block.images.length-4)+'…</div>' : '');
+        } else {
+          previewHtml = '<div class="block-preview-thumb"><div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/></svg>картинки не выбраны</div></div>';
+        }
       } else if(block.type === "video"){
         previewHtml = block.src
           ? '<div class="block-preview-thumb"><video src="'+block.src+'" muted></video></div>'
@@ -1302,7 +1445,21 @@
         const bg = block.color === "accent" ? "var(--accent)" : (block.color === "dark" ? "var(--ink-0)" : "transparent");
         const fg = block.color === "outline" ? "var(--ink-0)" : (block.color === "accent" ? "var(--accent-ink)" : "#fff");
         const border = block.color === "outline" ? "1px solid var(--line-strong)" : "none";
-        previewHtml = '<span class="block-button-preview" style="background:'+bg+';color:'+fg+';border:'+border+'">'+escapeHtml(block.label || "Кнопка")+'</span>';
+        const width = block.width === "full" ? "display:flex;" : "display:inline-flex;";
+        previewHtml = '<span class="block-button-preview" style="'+width+'background:'+bg+';color:'+fg+';border:'+border+';justify-content:center;">'+escapeHtml(block.label || "Кнопка")+'</span>';
+      } else if(block.type === "feature"){
+        previewHtml = '<div class="block-summary">'+escapeHtml(block.icon||"✨")+' <b>'+escapeHtml(block.title||"")+'</b> — '+escapeHtml(block.text||"")+'</div>';
+      } else if(block.type === "social"){
+        const names = (block.links||[]).map(l=>l.label).filter(Boolean).join(", ");
+        previewHtml = '<div class="block-summary">' + (names || "нет ссылок") + '</div>';
+      } else if(block.type === "divider"){
+        previewHtml = '<div class="block-summary">линия · отступ: '+({small:"маленький",medium:"средний",large:"большой"}[block.spacing]||block.spacing)+'</div>';
+      } else if(block.type === "spacer"){
+        previewHtml = '<div class="block-summary">пустое пространство · '+({small:"маленькое",medium:"среднее",large:"большое"}[block.size]||block.size)+'</div>';
+      } else if(block.type === "embed"){
+        previewHtml = '<div class="block-summary">' + (block.url ? escapeHtml(block.url) : "ссылка не указана") + '</div>';
+      } else if(block.type === "contactform"){
+        previewHtml = '<div class="block-summary">форма → ' + (block.email ? escapeHtml(block.email) : "email не указан") + '</div>';
       }
 
       card.innerHTML =
@@ -1393,9 +1550,32 @@
     openBlockEditor(block.id, /*isNew*/ true);
   }
 
-  $$(".add-block-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=> addBlock(btn.dataset.add));
-  });
+  /* ---------------- ADD-BLOCK PICKER SHEET ---------------- */
+  const BLOCK_ORDER = ["heading","text","image","gallery","video","button","feature","social","divider","spacer","embed","contactform"];
+
+  function openAddPicker(){
+    els.pickerGrid.innerHTML = "";
+    BLOCK_ORDER.forEach(type=>{
+      const meta = BLOCK_META[type];
+      const item = document.createElement("button");
+      item.className = "picker-item";
+      item.innerHTML = '<span class="pi-ic">'+meta.icon+'</span><span>'+meta.label+'</span>';
+      item.addEventListener("click", ()=>{
+        closeAddPicker();
+        addBlock(type);
+      });
+      els.pickerGrid.appendChild(item);
+    });
+    els.addPickerOverlay.classList.add("show");
+    els.addPickerSheet.classList.add("show");
+  }
+  function closeAddPicker(){
+    els.addPickerOverlay.classList.remove("show");
+    els.addPickerSheet.classList.remove("show");
+  }
+  $("#btnAddBlock").addEventListener("click", openAddPicker);
+  $("#addPickerClose").addEventListener("click", closeAddPicker);
+  els.addPickerOverlay.addEventListener("click", closeAddPicker);
 
   function escapeHtml(str){
     const div = document.createElement("div");
@@ -1422,10 +1602,18 @@
     els.editSheetTitle.textContent = BLOCK_META[block.type].label + " — настройки";
     els.editSheetBody.innerHTML = "";
     const build = {
+      heading: buildHeadingEditor,
       text: buildTextEditor,
       image: buildImageEditor,
+      gallery: buildGalleryEditor,
       video: buildVideoEditor,
-      button: buildButtonEditor
+      button: buildButtonEditor,
+      feature: buildFeatureEditor,
+      social: buildSocialEditor,
+      divider: buildDividerEditor,
+      spacer: buildSpacerEditor,
+      embed: buildEmbedEditor,
+      contactform: buildContactFormEditor
     }[block.type];
     build(block);
     openSheet();
@@ -1491,6 +1679,16 @@
       {label:"Мелкий", value:"small"}, {label:"Обычный", value:"normal"}, {label:"Крупный", value:"large"}
     ], block.size, v => block.size = v);
 
+    const g4 = fieldGroup("ШРИФТ");
+    segRow(g4, [
+      {label:"Обычный", value:"sans"}, {label:"Моноширинный", value:"mono"}
+    ], block.font || "sans", v => block.font = v);
+
+    const g5 = fieldGroup("НАЧЕРТАНИЕ");
+    segRow(g5, [
+      {label:"Обычное", value:"normal"}, {label:"Жирное", value:"bold"}
+    ], block.weight || "normal", v => block.weight = v);
+
     addDoneButton();
   }
 
@@ -1536,6 +1734,12 @@
 
     const g4 = fieldGroup("СКРУГЛЁННЫЕ УГЛЫ");
     segRow(g4, [ {label:"Да", value:"yes"}, {label:"Нет", value:"no"} ], block.radius ? "yes" : "no", v => block.radius = (v==="yes"));
+
+    const g5 = fieldGroup("ССЫЛКА ПРИ КЛИКЕ (НЕОБЯЗАТЕЛЬНО)");
+    const link = document.createElement("input");
+    link.type="url"; link.value=block.link||""; link.placeholder="https://example.com";
+    link.addEventListener("input", ()=> block.link = link.value);
+    g5.appendChild(link);
 
     addDoneButton();
   }
@@ -1612,6 +1816,216 @@
     segRow(g5, [ {label:"В новой вкладке", value:"yes"}, {label:"В этой же", value:"no"} ],
       block.newTab ? "yes" : "no", v => block.newTab = (v==="yes"));
 
+    const g6 = fieldGroup("ШИРИНА");
+    segRow(g6, [ {label:"По содержимому", value:"auto"}, {label:"На всю ширину", value:"full"} ],
+      block.width || "auto", v => block.width = v);
+
+    addDoneButton();
+  }
+
+  function buildHeadingEditor(block){
+    const g1 = fieldGroup("ТЕКСТ ЗАГОЛОВКА");
+    const ta = document.createElement("textarea");
+    ta.value = block.content; ta.placeholder = "Заголовок раздела";
+    ta.style.minHeight = "50px";
+    ta.addEventListener("input", ()=> block.content = ta.value);
+    g1.appendChild(ta);
+
+    const g2 = fieldGroup("УРОВЕНЬ");
+    segRow(g2, [
+      {label:"Крупный (H1)", value:"h1"}, {label:"Средний (H2)", value:"h2"}, {label:"Малый (H3)", value:"h3"}
+    ], block.level, v => block.level = v);
+
+    const g3 = fieldGroup("ВЫРАВНИВАНИЕ");
+    segRow(g3, [
+      {label:"Слева", value:"left"}, {label:"По центру", value:"center"}, {label:"Справа", value:"right"}
+    ], block.align, v => block.align = v);
+
+    addDoneButton();
+  }
+
+  function buildGalleryEditor(block){
+    if(!block.images) block.images = [];
+    const g1 = fieldGroup("КАРТИНКИ (" + block.images.length + ")");
+
+    if(block.images.length){
+      const grid = document.createElement("div");
+      grid.style.cssText = "display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;";
+      block.images.forEach((src, i)=>{
+        const cell = document.createElement("div");
+        cell.style.cssText = "position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:var(--sand-2);";
+        cell.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+          '<button style="all:unset;cursor:pointer;position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,0.55);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;">×</button>';
+        cell.querySelector("button").addEventListener("click", ()=>{
+          block.images.splice(i,1);
+          openBlockEditor(block.id);
+        });
+        grid.appendChild(cell);
+      });
+      g1.appendChild(grid);
+    }
+
+    const zone = document.createElement("div");
+    zone.className = "upload-zone";
+    zone.innerHTML = '<span class="uz-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></span><span class="uz-text"><b>Добавить картинки</b>можно выбрать сразу несколько</span>';
+    zone.addEventListener("click", ()=>{
+      els.galleryImageInput.onchange = async (e)=>{
+        const files = Array.from(e.target.files || []);
+        if(!files.length) return;
+        try{
+          const dataUrls = await Promise.all(files.map(fileToDataUrl));
+          block.images.push(...dataUrls);
+          openBlockEditor(block.id);
+        }catch(err){ toast("Не удалось загрузить картинки"); }
+        els.galleryImageInput.value = "";
+      };
+      els.galleryImageInput.click();
+    });
+    g1.appendChild(zone);
+
+    const g2 = fieldGroup("КОЛОНОК В СЕТКЕ");
+    segRow(g2, [ {label:"2", value:"2"}, {label:"3", value:"3"}, {label:"4", value:"4"} ], block.columns, v => block.columns = v);
+
+    addDoneButton();
+  }
+
+  function buildFeatureEditor(block){
+    const g1 = fieldGroup("ЭМОДЗИ-ИКОНКА");
+    const icon = document.createElement("input");
+    icon.type="text"; icon.value=block.icon; icon.placeholder="✨";
+    icon.maxLength = 4;
+    icon.addEventListener("input", ()=> block.icon = icon.value);
+    g1.appendChild(icon);
+
+    const g2 = fieldGroup("ЗАГОЛОВОК");
+    const title = document.createElement("input");
+    title.type="text"; title.value=block.title; title.placeholder="Например: Быстрая доставка";
+    title.addEventListener("input", ()=> block.title = title.value);
+    g2.appendChild(title);
+
+    const g3 = fieldGroup("ОПИСАНИЕ");
+    const ta = document.createElement("textarea");
+    ta.value = block.text; ta.placeholder = "Короткое описание…";
+    ta.addEventListener("input", ()=> block.text = ta.value);
+    g3.appendChild(ta);
+
+    const g4 = fieldGroup("ВЫРАВНИВАНИЕ");
+    segRow(g4, [
+      {label:"Слева", value:"left"}, {label:"По центру", value:"center"}
+    ], block.align, v => block.align = v);
+
+    addDoneButton();
+  }
+
+  function buildSocialEditor(block){
+    if(!block.links) block.links = [];
+    const g1 = fieldGroup("ССЫЛКИ (до 6)");
+    const list = document.createElement("div");
+    list.style.cssText = "display:flex;flex-direction:column;gap:8px;";
+    block.links.forEach((link, i)=>{
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:6px;";
+      const nameInput = document.createElement("input");
+      nameInput.type="text"; nameInput.value=link.label; nameInput.placeholder="Название";
+      nameInput.style.cssText = "width:38%;background:var(--sand-2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:13px;color:var(--ink-0);outline:none;";
+      nameInput.addEventListener("input", ()=> link.label = nameInput.value);
+      const urlInput = document.createElement("input");
+      urlInput.type="url"; urlInput.value=link.url; urlInput.placeholder="https://…";
+      urlInput.style.cssText = "flex:1;background:var(--sand-2);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:13px;color:var(--ink-0);outline:none;";
+      urlInput.addEventListener("input", ()=> link.url = urlInput.value);
+      const rm = document.createElement("button");
+      rm.textContent = "×";
+      rm.style.cssText = "all:unset;cursor:pointer;width:32px;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:16px;";
+      rm.addEventListener("click", ()=>{ block.links.splice(i,1); openBlockEditor(block.id); });
+      row.appendChild(nameInput); row.appendChild(urlInput); row.appendChild(rm);
+      list.appendChild(row);
+    });
+    g1.appendChild(list);
+
+    if(block.links.length < 6){
+      const addBtn = document.createElement("button");
+      addBtn.textContent = "+ Добавить ссылку";
+      addBtn.style.cssText = "all:unset;cursor:pointer;margin-top:8px;font-size:12.5px;color:var(--accent);font-weight:600;";
+      addBtn.addEventListener("click", ()=>{
+        block.links.push({label:"", url:"https://"});
+        openBlockEditor(block.id);
+      });
+      g1.appendChild(addBtn);
+    }
+
+    const g2 = fieldGroup("ВЫРАВНИВАНИЕ");
+    segRow(g2, [
+      {label:"Слева", value:"left"}, {label:"По центру", value:"center"}, {label:"Справа", value:"right"}
+    ], block.align, v => block.align = v);
+
+    addDoneButton();
+  }
+
+  function buildDividerEditor(block){
+    const g1 = fieldGroup("СТИЛЬ ЛИНИИ");
+    segRow(g1, [
+      {label:"Сплошная", value:"solid"}, {label:"Пунктир", value:"dashed"}, {label:"Точки", value:"dotted"}
+    ], block.style, v => block.style = v);
+
+    const g2 = fieldGroup("ОТСТУП СВЕРХУ И СНИЗУ");
+    segRow(g2, [
+      {label:"Маленький", value:"small"}, {label:"Средний", value:"medium"}, {label:"Большой", value:"large"}
+    ], block.spacing, v => block.spacing = v);
+
+    addDoneButton();
+  }
+
+  function buildSpacerEditor(block){
+    const g1 = fieldGroup("ВЫСОТА ОТСТУПА");
+    segRow(g1, [
+      {label:"Маленький", value:"small"}, {label:"Средний", value:"medium"}, {label:"Большой", value:"large"}
+    ], block.size, v => block.size = v);
+    addDoneButton();
+  }
+
+  function buildEmbedEditor(block){
+    const g1 = fieldGroup("ССЫЛКА ДЛЯ ВСТРАИВАНИЯ (YOUTUBE, КАРТЫ И Т.П.)");
+    const url = document.createElement("input");
+    url.type="url"; url.value=block.url; url.placeholder="https://www.youtube.com/embed/…";
+    url.addEventListener("input", ()=> block.url = url.value);
+    g1.appendChild(url);
+    const hint = document.createElement("div");
+    hint.style.cssText = "font-size:11.5px;color:var(--ink-3);line-height:1.5;";
+    hint.textContent = "Используйте embed-ссылку сервиса (например, для YouTube — из пункта «Встроить», а не обычную ссылку на видео).";
+    g1.appendChild(hint);
+
+    const g2 = fieldGroup("ВЫСОТА (ПИКСЕЛЕЙ)");
+    const height = document.createElement("input");
+    height.type="text"; height.value=block.height; height.placeholder="400";
+    height.addEventListener("input", ()=> block.height = height.value.replace(/[^0-9]/g,""));
+    g2.appendChild(height);
+
+    addDoneButton();
+  }
+
+  function buildContactFormEditor(block){
+    const g1 = fieldGroup("ЗАГОЛОВОК ФОРМЫ");
+    const title = document.createElement("input");
+    title.type="text"; title.value=block.title; title.placeholder="Свяжитесь с нами";
+    title.addEventListener("input", ()=> block.title = title.value);
+    g1.appendChild(title);
+
+    const g2 = fieldGroup("КУДА ПРИХОДЯТ СООБЩЕНИЯ (EMAIL)");
+    const email = document.createElement("input");
+    email.type="text"; email.value=block.email; email.placeholder="you@example.com";
+    email.addEventListener("input", ()=> block.email = email.value);
+    g2.appendChild(email);
+    const hint = document.createElement("div");
+    hint.style.cssText = "font-size:11.5px;color:var(--ink-3);line-height:1.5;";
+    hint.textContent = "Сайт статический и не имеет сервера — форма открывает почтовый клиент посетителя с уже заполненным письмом на этот адрес.";
+    g2.appendChild(hint);
+
+    const g3 = fieldGroup("ТЕКСТ КНОПКИ");
+    const btnLabel = document.createElement("input");
+    btnLabel.type="text"; btnLabel.value=block.buttonLabel; btnLabel.placeholder="Отправить";
+    btnLabel.addEventListener("input", ()=> block.buttonLabel = btnLabel.value);
+    g3.appendChild(btnLabel);
+
     addDoneButton();
   }
 
@@ -1654,6 +2068,12 @@
 
   /* ---------------- COMPILING BLOCKS INTO A STATIC HTML DOCUMENT ---------------- */
 
+  function sanitizeHref(raw){
+    const trimmed = raw && raw.trim() ? raw.trim() : "";
+    const isDangerousScheme = /^\s*(javascript|data|vbscript):/i.test(trimmed);
+    return (trimmed && !isDangerousScheme) ? trimmed : "";
+  }
+
   function buildSiteHtml(opts){
     opts = opts || {};
     const bgStyle = builder.background
@@ -1661,16 +2081,35 @@
       : "background:#ffffff;";
 
     const blocksHtml = builder.blocks.map(block=>{
+      if(block.type === "heading"){
+        const tag = block.level || "h2";
+        const sizeMap = { h1:"36px", h2:"26px", h3:"20px" };
+        const style = `text-align:${block.align};font-size:${sizeMap[tag]};line-height:1.3;font-weight:700;margin:0;`;
+        return `  <${tag} style="${style}">${escapeHtml(block.content).replace(/\n/g,"<br>")}</${tag}>\n`;
+      }
       if(block.type === "text"){
         const sizeMap = { small:"14px", normal:"18px", large:"28px" };
-        const style = `text-align:${block.align};font-size:${sizeMap[block.size]};line-height:1.6;` + (block.color ? `color:${block.color};` : "");
+        const ff = block.font === "mono" ? "ui-monospace,'SF Mono','Cascadia Code',Consolas,monospace" : "inherit";
+        const fw = block.weight === "bold" ? "700" : "400";
+        const style = `text-align:${block.align};font-size:${sizeMap[block.size]};line-height:1.6;font-family:${ff};font-weight:${fw};` + (block.color ? `color:${block.color};` : "");
         return `  <p style="${style}">${escapeHtml(block.content).replace(/\n/g,"<br>")}</p>\n`;
       }
       if(block.type === "image"){
         if(!block.src) return "";
         const widthMap = { small:"280px", medium:"560px", full:"100%" };
         const style = `max-width:${widthMap[block.width]};width:100%;display:block;margin:0 auto;` + (block.radius ? "border-radius:14px;" : "");
-        return `  <img src="${block.src}" alt="${escapeHtml(block.alt)}" style="${style}">\n`;
+        const img = `<img src="${block.src}" alt="${escapeHtml(block.alt)}" style="${style}">`;
+        const href = sanitizeHref(block.link);
+        if(href){
+          return `  <a href="${escapeAttr(href)}" style="display:block;max-width:${widthMap[block.width]};margin:0 auto;">${img}</a>\n`;
+        }
+        return `  ${img}\n`;
+      }
+      if(block.type === "gallery"){
+        if(!block.images || !block.images.length) return "";
+        const cols = block.columns || "2";
+        const imgs = block.images.map(src=>`<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;">`).join("\n    ");
+        return `  <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:10px;">\n    ${imgs}\n  </div>\n`;
       }
       if(block.type === "video"){
         if(!block.src) return "";
@@ -1689,10 +2128,72 @@
         const borderStyle = block.color === "outline" ? "border:2px solid #17181a;" : "border:none;";
         const wrapStyle = `text-align:${block.align};`;
         const target = block.newTab ? ' target="_blank" rel="noopener noreferrer"' : "";
-        const rawLink = block.link && block.link.trim() ? block.link.trim() : "";
-        const isDangerousScheme = /^\s*(javascript|data|vbscript):/i.test(rawLink);
-        const href = (rawLink && !isDangerousScheme) ? rawLink : "#";
-        return `  <div style="${wrapStyle}"><a href="${escapeAttr(href)}"${target} style="display:inline-block;padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;background:${bgMap[block.color]};color:${fgMap[block.color]};${borderStyle}">${escapeHtml(block.label)}</a></div>\n`;
+        const href = sanitizeHref(block.link) || "#";
+        const display = block.width === "full" ? "display:block;" : "display:inline-block;";
+        return `  <div style="${wrapStyle}"><a href="${escapeAttr(href)}"${target} style="${display}padding:14px 28px;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;text-align:center;background:${bgMap[block.color]};color:${fgMap[block.color]};${borderStyle}">${escapeHtml(block.label)}</a></div>\n`;
+      }
+      if(block.type === "feature"){
+        const align = block.align || "center";
+        const itemsAlign = align === "center" ? "center" : "flex-start";
+        return `  <div style="display:flex;flex-direction:column;align-items:${itemsAlign};text-align:${align};gap:8px;">
+    <div style="font-size:32px;line-height:1;">${escapeHtml(block.icon || "✨")}</div>
+    <div style="font-weight:700;font-size:17px;">${escapeHtml(block.title || "")}</div>
+    <div style="color:#5b6069;font-size:14px;line-height:1.5;max-width:36ch;">${escapeHtml(block.text || "")}</div>
+  </div>\n`;
+      }
+      if(block.type === "social"){
+        const links = (block.links || []).filter(l => l.label && l.label.trim());
+        if(!links.length) return "";
+        const justify = { left:"flex-start", center:"center", right:"flex-end" }[block.align || "center"];
+        const items = links.map(l=>{
+          const href = sanitizeHref(l.url) || "#";
+          return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="padding:8px 16px;border-radius:8px;background:#f3f0ea;color:#17181a;text-decoration:none;font-size:13.5px;font-weight:600;">${escapeHtml(l.label)}</a>`;
+        }).join("\n    ");
+        return `  <div style="display:flex;justify-content:${justify};flex-wrap:wrap;gap:10px;">\n    ${items}\n  </div>\n`;
+      }
+      if(block.type === "divider"){
+        const spacingMap = { small:"12px", medium:"28px", large:"52px" };
+        const styleMap = { solid:"solid", dashed:"dashed", dotted:"dotted" };
+        const m = spacingMap[block.spacing] || spacingMap.medium;
+        return `  <hr style="border:none;border-top:1px ${styleMap[block.style]||"solid"} rgba(20,20,15,0.15);margin:${m} 0;">\n`;
+      }
+      if(block.type === "spacer"){
+        const sizeMap = { small:"24px", medium:"56px", large:"110px" };
+        return `  <div style="height:${sizeMap[block.size]||sizeMap.medium};"></div>\n`;
+      }
+      if(block.type === "embed"){
+        const href = sanitizeHref(block.url);
+        if(!href) return "";
+        const height = /^[0-9]+$/.test(block.height) ? block.height : "400";
+        return `  <iframe src="${escapeAttr(href)}" style="width:100%;height:${height}px;border:none;border-radius:10px;" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>\n`;
+      }
+      if(block.type === "contactform"){
+        const email = (block.email || "").trim();
+        const formId = "qhr-form-" + Math.random().toString(36).slice(2,8);
+        if(!email){
+          return `  <div style="max-width:420px;margin:0 auto;width:100%;padding:16px;border-radius:10px;background:#fdeee8;color:#9a3b3b;font-size:13px;text-align:center;">Форма «${escapeHtml(block.title || "Свяжитесь с нами")}» не настроена — не указан email получателя.</div>\n`;
+        }
+        return `  <form id="${formId}" style="display:flex;flex-direction:column;gap:10px;max-width:420px;margin:0 auto;width:100%;">
+    <div style="font-weight:700;font-size:18px;text-align:center;">${escapeHtml(block.title || "Свяжитесь с нами")}</div>
+    <input name="name" placeholder="Ваше имя" style="padding:12px 14px;border-radius:9px;border:1px solid rgba(20,20,15,0.15);font-size:14px;">
+    <input name="message" placeholder="Сообщение" style="padding:12px 14px;border-radius:9px;border:1px solid rgba(20,20,15,0.15);font-size:14px;">
+    <button type="submit" style="padding:13px;border-radius:9px;border:none;background:#c15f3c;color:#fdf6f2;font-weight:700;font-size:14.5px;cursor:pointer;">${escapeHtml(block.buttonLabel || "Отправить")}</button>
+  </form>
+  <script>
+    (function(){
+      var f = document.getElementById(${JSON.stringify(formId)});
+      f.addEventListener("submit", function(e){
+        e.preventDefault();
+        var name = f.querySelector('[name="name"]').value || "";
+        var message = f.querySelector('[name="message"]').value || "";
+        var body = (name ? "От: " + name + "\\n\\n" : "") + message;
+        var mailto = "mailto:" + ${JSON.stringify(email)} +
+          "?subject=" + encodeURIComponent("Сообщение с сайта") +
+          "&body=" + encodeURIComponent(body);
+        window.location.href = mailto;
+      });
+    })();
+  <\/script>\n`;
       }
       return "";
     }).join("\n");
@@ -1769,6 +2270,7 @@ ${blocksHtml}</div>
     const html = buildSiteHtml({ withBanner: true });
     els.codeArea.value = html; // keep the editor in sync, so "Редактировать" after preview shows real code
     state.code = html;
+    state.builderData = { v:1, bg: builder.background || null, blocks: builder.blocks };
     if(!isSharedSession){
       addToHistory(state.filename || "сайт.html", html);
     }
@@ -1779,6 +2281,20 @@ ${blocksHtml}</div>
   });
   // Each view push adds a history entry so the system/browser back gesture
   // moves to the previous screen instead of leaving the app.
+  //
+  // Some hosting contexts (e.g. this app running inside a sandboxed preview
+  // iframe with an "about:srcdoc" document URL) throw a SecurityError from
+  // pushState/replaceState, because the browser can't resolve a same-origin
+  // URL against that special document URL. That's an environment quirk, not
+  // a bug in the app's logic — so these calls are wrapped to fail silently:
+  // the view still switches, it just won't get its own history entry (and
+  // the system back-gesture won't step through screens) in that environment.
+  function safePushState(state, url){
+    try{ history.pushState(state, "", url); }catch(err){ /* srcdoc / sandboxed origin — ignore */ }
+  }
+  function safeReplaceState(state, url){
+    try{ history.replaceState(state, "", url); }catch(err){ /* srcdoc / sandboxed origin — ignore */ }
+  }
 
   function renderView(name){
     Object.entries(els.views).forEach(([k,v])=>{
@@ -1791,9 +2307,9 @@ ${blocksHtml}</div>
     renderView(name);
     const histState = { view: name };
     if(opts.replace){
-      history.replaceState(histState, "", "#" + name);
+      safeReplaceState(histState, "#" + name);
     } else {
-      history.pushState(histState, "", "#" + name);
+      safePushState(histState, "#" + name);
     }
   }
 
@@ -1815,7 +2331,7 @@ ${blocksHtml}</div>
     // Leaving the shared link entirely: drop the hash and go to the real home screen.
     isSharedSession = false;
     els.sharedBanner.style.display = "none";
-    history.replaceState({ view: "home" }, "", location.pathname + location.search);
+    safeReplaceState({ view: "home" }, location.pathname + location.search);
     renderView("home");
   });
 
@@ -1830,7 +2346,7 @@ ${blocksHtml}</div>
   window.addEventListener("message", (e)=>{
     if(e.source !== els.previewFrame.contentWindow) return;
     if(e.data && e.data.type === "qhr-banner-home"){
-      history.replaceState({ view: "home" }, "", location.pathname + location.search);
+      safeReplaceState({ view: "home" }, location.pathname + location.search);
       renderView("home");
     }
   });
@@ -1849,7 +2365,7 @@ ${blocksHtml}</div>
         els.previewTitle.textContent = state.filename;
         saveDraft();
         showSharedBanner();
-        history.replaceState({ view: "preview" }, "", hash);
+        safeReplaceState({ view: "preview" }, hash);
         renderView("preview");
         renderFrame();
         return;
@@ -1858,7 +2374,7 @@ ${blocksHtml}</div>
       }
     }
     // Normal boot: start on home.
-    history.replaceState({ view: "home" }, "", "#home");
+    safeReplaceState({ view: "home" }, "#home");
     renderView("home");
   }
 
@@ -2120,7 +2636,13 @@ ${blocksHtml}</div>
 
   /* ---------------- PREVIEW ---------------- */
   function runPreview(){
-    state.code = els.codeArea.value;
+    const newCode = els.codeArea.value;
+    // If the code no longer matches what the builder last generated, any
+    // compact builder-origin data is stale — fall back to full-HTML sharing.
+    if(state.builderData && newCode !== state.code){
+      state.builderData = null;
+    }
+    state.code = newCode;
     if(!state.code.trim()){
       toast("Сначала введите какой-нибудь код");
       return;
@@ -2176,7 +2698,14 @@ ${blocksHtml}</div>
     }
     let longLink;
     try{
-      const param = await encodeCodeToParam(code);
+      // Prefer the compact form when the code on screen is exactly what the
+      // builder last generated — it encodes only the actual content
+      // (background + blocks), skipping the repeated HTML/CSS boilerplate,
+      // so the resulting link is meaningfully shorter.
+      const useCompact = state.builderData && code === state.code;
+      const param = useCompact
+        ? await encodeBuilderDataToParam(state.builderData)
+        : await encodeCodeToParam(code);
       longLink = location.origin + location.pathname + "#" + param;
     }catch(err){
       toast("Не получилось создать ссылку: " + (err && err.message ? err.message : "неизвестная ошибка"));
